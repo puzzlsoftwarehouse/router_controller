@@ -1,3 +1,5 @@
+Usamos como base uma biblioteca chamada Fluro, apenas adaptamos algumas coisas para funcionar da melhor forma possível.
+
 O Fluro é uma poderosa biblioteca de roteamento para o Flutter que facilita a navegação entre diferentes telas da sua aplicação. Ele oferece uma maneira simples e declarativa de definir e gerenciar as rotas da sua aplicação Flutter. Nesta documentação, vou explicar como você pode usar o Fluro no Flutter para configurar o roteamento em sua aplicação.
 
 **Passo 1: Adicionar Dependência Fluro**
@@ -6,7 +8,10 @@ Primeiro, você precisa adicionar a dependência do Fluro ao seu arquivo `pubspe
 
 ```yaml
 dependencies:
-  fluro: ^1.7.9
+  router_controller:
+  git:
+    url: https://github.com/puzzlsoftwarehouse/router_controller.git
+    ref: develop
 ```
 
 Em seguida, execute `flutter pub get` para baixar a dependência.
