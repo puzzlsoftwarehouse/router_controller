@@ -105,7 +105,7 @@ class FluroRouter {
         settings: routeSettings,
         maintainState: maintainState ?? true,
         builder: (BuildContext context) {
-          return notFoundHandler?.handlerFunc(context, parameters) ??
+          return notFoundHandler?.func(context, parameters) ??
               const SizedBox.shrink();
         },
       );
@@ -154,7 +154,7 @@ class FluroRouter {
     final parameters = match?.parameters ?? <String, List<String>>{};
 
     if (handler.type == HandlerType.function) {
-      handler.handlerFunc(buildContext, parameters);
+      handler.func(buildContext, parameters);
       return RouteMatch(matchType: RouteMatchType.nonVisual);
     }
 
@@ -171,8 +171,7 @@ class FluroRouter {
           fullscreenDialog: transition == TransitionType.nativeModal,
           maintainState: maintainState,
           builder: (BuildContext context) {
-            return handler.handlerFunc(context, parameters) ??
-                const SizedBox.shrink();
+            return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
       } else if (transition == TransitionType.material ||
@@ -183,8 +182,7 @@ class FluroRouter {
               transition == TransitionType.materialFullScreenDialog,
           maintainState: maintainState,
           builder: (BuildContext context) {
-            return handler.handlerFunc(context, parameters) ??
-                const SizedBox.shrink();
+            return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
       } else if (transition == TransitionType.cupertino ||
@@ -195,8 +193,7 @@ class FluroRouter {
               transition == TransitionType.cupertinoFullScreenDialog,
           maintainState: maintainState,
           builder: (BuildContext context) {
-            return handler.handlerFunc(context, parameters) ??
-                const SizedBox.shrink();
+            return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
       } else {
@@ -215,8 +212,7 @@ class FluroRouter {
           maintainState: maintainState,
           pageBuilder: (BuildContext context, Animation<double> animation,
               Animation<double> secondaryAnimation) {
-            return handler.handlerFunc(context, parameters) ??
-                const SizedBox.shrink();
+            return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
           transitionDuration: transition == TransitionType.none
               ? Duration.zero

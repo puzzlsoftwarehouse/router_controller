@@ -8,11 +8,11 @@ enum HandlerType {
 class Handler {
   Handler({
     this.type = HandlerType.route,
-    required this.handlerFunc,
+    required this.func,
   });
 
   final HandlerType type;
-  final HandlerFunc handlerFunc;
+  final HandlerFunc func;
 }
 
 typedef RouteCreator<T> = Route<T> Function(
