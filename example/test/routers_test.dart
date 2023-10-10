@@ -41,7 +41,7 @@ void main() {
       expectRouter(RouterHandler.firstName, url);
     });
 
-    test('Testing router initial', () {
+    test('Testing router second', () {
       String url = "/second";
 
       routerController.router.define(
@@ -50,6 +50,23 @@ void main() {
       );
 
       expectRouter(RouterHandler.secondName, url);
+    });
+
+    test('Testing router three', () {
+      String url = "/three/:id";
+
+      routerController.router.define(
+        RouterHandler.threeName,
+        handler: Handler(func: (_, __) => const MockHomeScreen()),
+      );
+
+      expectRouter(
+        RouterHandler.threeName,
+        url,
+        args: {
+          'id': [':id']
+        },
+      );
     });
   });
 }
