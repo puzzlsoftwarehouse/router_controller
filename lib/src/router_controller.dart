@@ -3,7 +3,7 @@ import 'package:router_controller/fluro.dart';
 import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
-typedef Builder<T> = T;
+typedef Builder<T> = T Function();
 
 class RouterController<T> with ChangeNotifier {
   late BuildContext context;
