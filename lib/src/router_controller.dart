@@ -3,7 +3,8 @@ import 'package:router_controller/fluro.dart';
 import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
-class RouterController {
+class RouterController with ChangeNotifier {
+  bool _disposed = false;
   late BuildContext context;
 
   FluroRouter router = FluroRouter();
@@ -90,5 +91,18 @@ class RouterController {
     }
 
     return null;
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
+  }
+
+  @override
+  void notifyListeners() {
+    if (!_disposed) {
+      super.notifyListeners();
+    }
   }
 }
