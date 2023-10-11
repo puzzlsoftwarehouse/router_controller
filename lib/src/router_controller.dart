@@ -4,15 +4,12 @@ import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
 class RouterController<T> with ChangeNotifier {
-  late BuildContext context;
   late T builder;
 
   bool _disposed = false;
   FluroRouter router = FluroRouter();
 
   RouterController(this.builder);
-
-  void setBuildContext(BuildContext context) => this.context = context;
 
   void setupRouter({
     required Map<String, Handler> allRoutes,
@@ -31,13 +28,19 @@ class RouterController<T> with ChangeNotifier {
     });
   }
 
-  Future<dynamic> navigateWithWidget({required Widget widget}) =>
+  Future<dynamic> navigateWithWidget({
+    required BuildContext context,
+    required Widget widget,
+  }) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
 
-  void popRouter({Object? args}) => router.pop(context, args);
-  void popContext({Object? args}) => Navigator.pop(context, args);
+  void popRouter({required BuildContext context, Object? args}) =>
+      router.pop(context, args);
+  void popContext({required BuildContext context, Object? args}) =>
+      Navigator.pop(context, args);
 
   Future<dynamic> navigateWithName({
+    required BuildContext context,
     required String nameRouter,
     Object? arguments,
     bool clearStack = false,
@@ -75,9 +78,6 @@ class RouterController<T> with ChangeNotifier {
     return {
       "pageRouter": pageRouterFiltered,
       "arguments": args,
-      // "companyGroup": getIndex(args, 0),
-      // "companyId": int.tryParse(getIndex(args, 1) ?? ""),
-      // "quoteId": int.tryParse(getIndex(args, 3) ?? ""),
     };
   }
 
