@@ -22,7 +22,7 @@ Agora, você precisa configurar as rotas da sua aplicação. Crie um arquivo ond
 
 ```dart
 import 'package:flutter/material.dart';
-import 'package:fluro/fluro.dart';
+import 'package:fluro/router_controller.dart';
 
 class Routes {
   static FluroRouter router = FluroRouter();

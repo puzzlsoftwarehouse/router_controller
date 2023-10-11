@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/src/tree.dart';
 
-import '../fluro.dart';
+import '../router_controller.dart';
 
 class FluroRouter {
   static final appRouter = FluroRouter();
