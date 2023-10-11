@@ -4,10 +4,28 @@ import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
 class RouterController {
-  BuildContext context;
-  RouterController(this.context);
+  late BuildContext context;
 
   FluroRouter router = FluroRouter();
+
+  void setBuildContext(BuildContext context) => this.context = context;
+
+  void setupRouter({
+    required Map<String, Handler> allRoutes,
+    Widget? notFoundWidget,
+    TransitionType? transitionType,
+  }) {
+    router.notFoundHandler =
+        Handler(func: (_, __) => notFoundWidget ?? const SizedBox.shrink());
+
+    allRoutes.forEach((String nameRouter, Handler handler) {
+      router.define(
+        nameRouter,
+        handler: handler,
+        transitionType: transitionType,
+      );
+    });
+  }
 
   Future<dynamic> navigateWithWidget({required Widget widget}) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
