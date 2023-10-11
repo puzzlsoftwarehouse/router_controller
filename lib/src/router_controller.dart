@@ -3,9 +3,11 @@ import 'package:router_controller/fluro.dart';
 import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
+typedef Builder<T> = T;
+
 class RouterController<T> with ChangeNotifier {
   late BuildContext context;
-  late T builder;
+  late Builder<T> builder;
 
   bool _disposed = false;
   FluroRouter router = FluroRouter();
