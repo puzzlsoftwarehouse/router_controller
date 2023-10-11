@@ -5,7 +5,7 @@ import 'package:universal_html/html.dart' as html;
 
 class RouterController<T> with ChangeNotifier {
   late BuildContext context;
-  late T Function() builder;
+  late T builder;
 
   bool _disposed = false;
   FluroRouter router = FluroRouter();
