@@ -54,41 +54,37 @@ class RouteTree {
       if (_hasDefaultRoute) {
         throw ("Default route was already defined");
       }
-
       var node = RouteTreeNode(path, RouteTreeNodeType.component);
       node.routes = [route];
       _nodes.add(node);
       _hasDefaultRoute = true;
       return;
     }
-
     if (path.startsWith("/")) {
       path = path.substring(1);
     }
-
     List<String> pathComponents = path.split('/');
     RouteTreeNode? parent;
-
     for (int i = 0; i < pathComponents.length; i++) {
-      String? component = pathComponents[i];
+      String component = pathComponents[i];
       RouteTreeNode? node = _nodeForComponent(component, parent);
-
       if (node == null) {
         RouteTreeNodeType type = _typeForComponent(component);
         node = RouteTreeNode(component, type);
         node.parent = parent;
-
         if (parent == null) {
           _nodes.add(node);
         } else {
           parent.nodes.add(node);
         }
       }
-
       if (i == pathComponents.length - 1) {
-        node.routes.add(route);
+        if (node.routes.isEmpty) {
+          node.routes = [route];
+        } else {
+          node.routes.add(route);
+        }
       }
-
       parent = node;
     }
   }
