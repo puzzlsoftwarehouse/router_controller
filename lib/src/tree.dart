@@ -77,27 +77,34 @@ class RouteTree {
       _hasDefaultRoute = true;
       return;
     }
+
     if (path.startsWith("/")) {
       path = path.substring(1);
     }
+
     List<String> pathComponents = path.split('/');
     RouteTreeNode? parent;
+
     for (int i = 0; i < pathComponents.length; i++) {
       String component = pathComponents[i];
       RouteTreeNode? node = _nodeForComponent(component, parent);
+
       if (node == null) {
         RouteTreeNodeType type = _typeForComponent(component);
         node = RouteTreeNode(component, type);
         node.parent = parent;
+
         if (parent == null) {
           _nodes.add(node);
         } else {
           parent.nodes.add(node);
         }
       }
+
       if (i == pathComponents.length - 1) {
         node.routes.add(route);
       }
+
       parent = node;
     }
   }
@@ -147,16 +154,16 @@ class RouteTree {
       }
       nodeMatches = currentMatches;
       nodesToCheck = nextNodes;
-      if (currentMatches.values.length == 0) {
+      if (currentMatches.values.isEmpty) {
         return null;
       }
     }
     List<RouteTreeNodeMatch> matches = nodeMatches.values.toList();
-    if (matches.length > 0) {
+    if (matches.isNotEmpty) {
       RouteTreeNodeMatch match = matches.first;
       RouteTreeNode nodeToUse = match.node;
 //			print("using match: ${match}, ${nodeToUse?.part}, ${match?.parameters}");
-      if (nodeToUse.routes.length > 0) {
+      if (nodeToUse.routes.isNotEmpty) {
         List<AppRoute> routes = nodeToUse.routes;
         AppRouteMatch routeMatch = AppRouteMatch(routes[0]);
         routeMatch.parameters = match.parameters;
@@ -177,8 +184,8 @@ class RouteTree {
       for (int i = 0; i < level; i++) {
         indent += "    ";
       }
-      print("$indent${node.part}: total routes=${node.routes.length}");
-      if (node.nodes.length > 0) {
+      debugPrint("$indent${node.part}: total routes=${node.routes.length}");
+      if (node.nodes.isNotEmpty) {
         _printSubTree(parent: node, level: level + 1);
       }
     }
@@ -213,7 +220,7 @@ class RouteTree {
 
   Map<String, List<String>> parseQueryString(String query) {
     var search = RegExp('([^&=]+)=?([^&]*)');
-    var params = Map<String, List<String>>();
+    var params = <String, List<String>>{};
     if (query.startsWith('?')) query = query.substring(1);
     decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
     for (Match match in search.allMatches(query)) {
