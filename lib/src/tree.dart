@@ -74,7 +74,7 @@ class RouteTree {
       var node = RouteTreeNode(firstComponent, RouteTreeNodeType.parameter);
       node.parent = null;
       _nodes.add(node);
-      pathComponents.removeAt(0);
+      return;
     }
 
     RouteTreeNode? parent;
