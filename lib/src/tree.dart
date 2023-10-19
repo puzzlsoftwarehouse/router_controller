@@ -66,8 +66,7 @@ class RouteTree {
       path = path.substring(1);
     }
 
-    final pathComponents = path.split('/');
-
+    List<String> pathComponents = path.split('/');
     RouteTreeNode? parent;
 
     for (int i = 0; i < pathComponents.length; i++) {
