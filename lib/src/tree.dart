@@ -1,6 +1,14 @@
-import 'package:flutter/widgets.dart';
+/*
+ * fluro
+ * Created by Yakka
+ * https://theyakka.com
+ *
+ * Copyright (c) 2019 Yakka, LLC. All rights reserved.
+ * See LICENSE for distribution and usage details.
+ */
 
-import '../router_controller.dart';
+import './common.dart';
+import 'package:flutter/widgets.dart';
 
 enum RouteTreeNodeType {
   component,
@@ -88,11 +96,7 @@ class RouteTree {
         }
       }
       if (i == pathComponents.length - 1) {
-        if (node.routes == null) {
-          node.routes = [route];
-        } else {
-          node.routes.add(route);
-        }
+        node.routes.add(route);
       }
       parent = node;
     }
@@ -125,7 +129,8 @@ class RouteTree {
         }
         bool isMatch = (node.part == pathPart || node.isParameter());
         if (isMatch) {
-          RouteTreeNodeMatch? parentMatch = nodeMatches[node.parent];
+          RouteTreeNodeMatch? parentMatch =
+              node.parent != null ? nodeMatches[node.parent] : null;
           RouteTreeNodeMatch match =
               RouteTreeNodeMatch.fromMatch(parentMatch, node);
           if (node.isParameter()) {
@@ -137,9 +142,7 @@ class RouteTree {
           }
 //          print("matched: ${node.part}, isParam: ${node.isParameter()}, params: ${match.parameters}");
           currentMatches[node] = match;
-          if (node.nodes != null) {
-            nextNodes.addAll(node.nodes);
-          }
+          nextNodes.addAll(node.nodes);
         }
       }
       nodeMatches = currentMatches;
@@ -153,9 +156,7 @@ class RouteTree {
       RouteTreeNodeMatch match = matches.first;
       RouteTreeNode nodeToUse = match.node;
 //			print("using match: ${match}, ${nodeToUse?.part}, ${match?.parameters}");
-      if (nodeToUse != null &&
-          nodeToUse.routes != null &&
-          nodeToUse.routes.length > 0) {
+      if (nodeToUse.routes.length > 0) {
         List<AppRoute> routes = nodeToUse.routes;
         AppRouteMatch routeMatch = AppRouteMatch(routes[0]);
         routeMatch.parameters = match.parameters;
@@ -177,7 +178,7 @@ class RouteTree {
         indent += "    ";
       }
       print("$indent${node.part}: total routes=${node.routes.length}");
-      if (node.nodes != null && node.nodes.length > 0) {
+      if (node.nodes.length > 0) {
         _printSubTree(parent: node, level: level + 1);
       }
     }
@@ -212,7 +213,7 @@ class RouteTree {
 
   Map<String, List<String>> parseQueryString(String query) {
     var search = RegExp('([^&=]+)=?([^&]*)');
-    var params = <String, List<String>>{};
+    var params = Map<String, List<String>>();
     if (query.startsWith('?')) query = query.substring(1);
     decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
     for (Match match in search.allMatches(query)) {
