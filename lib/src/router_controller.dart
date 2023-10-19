@@ -16,8 +16,8 @@ class RouterController<T> with ChangeNotifier {
     Widget? notFoundWidget,
     TransitionType? transitionType,
   }) {
-    router.notFoundHandler =
-        Handler(func: (_, __) => notFoundWidget ?? const SizedBox.shrink());
+    // router.notFoundHandler =
+    //     Handler(func: (_, __) => notFoundWidget ?? const SizedBox.shrink());
 
     for (String nameRouter in allRoutes.keys.toList()) {
       router.define(
