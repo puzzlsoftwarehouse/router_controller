@@ -19,7 +19,8 @@ class RouterController<T> with ChangeNotifier {
     router.notFoundHandler =
         Handler(func: (_, __) => notFoundWidget ?? const SizedBox.shrink());
 
-    allRoutes.forEach((String nameRouter, Handler handler) {
+    allRoutes.forEach((String nameRouter, Handler handler) async {
+      await Future.delayed(const Duration(milliseconds: 500));
       router.define(
         nameRouter,
         handler: handler,
