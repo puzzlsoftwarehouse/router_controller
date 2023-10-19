@@ -67,16 +67,10 @@ class RouteTree {
     }
 
     final pathComponents = path.split('/');
-
     RouteTreeNode? parent;
 
     for (int i = 0; i < pathComponents.length; i++) {
       String? component = pathComponents[i];
-      if (component.startsWith(":")) {
-        // Handle routes that start with a parameter like "/:companyGroup/:companyId/jobTracker"
-        component = ":"; // Use a single symbol to represent the parameter
-      }
-
       RouteTreeNode? node = _nodeForComponent(component, parent);
 
       if (node == null) {
