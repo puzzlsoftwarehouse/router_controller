@@ -1,8 +1,8 @@
 import 'package:example/main.dart';
-import 'package:example/router/router_controller.dart';
+import 'package:example/router/navigation_controller.dart';
 import 'package:example/router/router_handler.dart';
-import 'package:router_controller/fluro.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:router_controller/router_controller.dart';
 
 class RouterMock {
   RouterMock._();
@@ -18,7 +18,7 @@ class RouterMock {
   };
 
   static mock({
-    required RouterController controller,
+    required NavigationController controller,
     required Map<String, Handler> routers,
   }) {
     routers.forEach((key, value) {
@@ -27,7 +27,7 @@ class RouterMock {
   }
 
   static Future<void> mockBeforeScreen({
-    required RouterController routerController,
+    required NavigationController routerController,
     required String beforeNameRouter,
     required WidgetTester tester,
   }) async {

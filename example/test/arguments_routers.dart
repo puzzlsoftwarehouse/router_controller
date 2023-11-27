@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:router_controller/fluro.dart';
+import 'package:router_controller/router_controller.dart';
 
 void main() {
   test("Router correctly parses named parameters", () async {
