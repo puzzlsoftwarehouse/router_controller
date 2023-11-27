@@ -8,16 +8,19 @@ class ThreePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          CupertinoButton(
-            color: Colors.red,
-            onPressed: () {
-              Navigator.pop(navigationApp.currentContext!);
-            },
-            child: const Text("Navigate First Page"),
-          ),
-        ],
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CupertinoButton(
+              color: Colors.red,
+              onPressed: () {
+                Navigator.pop(navigationApp.currentContext!);
+              },
+              child: const Text("Navigate Three Page"),
+            ),
+          ],
+        ),
       ),
     );
   }

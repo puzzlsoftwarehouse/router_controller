@@ -1,9 +1,9 @@
-import 'package:example/router/router_controller.dart';
+import 'package:example/router/navigation_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FirstPage extends StatelessWidget {
-  final RouterController? routerController;
+  final NavigationController? routerController;
 
   const FirstPage({
     super.key,

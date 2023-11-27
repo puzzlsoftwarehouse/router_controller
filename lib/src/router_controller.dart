@@ -34,6 +34,13 @@ class RouterController<T> with ChangeNotifier {
   }) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
 
+  Future<dynamic> navigateReplacementWithWidget({
+    required BuildContext context,
+    required Widget widget,
+  }) =>
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (_) => widget));
+
   void popRouter({required BuildContext context, Object? args}) =>
       router.pop(context, args);
   void popContext({required BuildContext context, Object? args}) =>
@@ -52,6 +59,23 @@ class RouterController<T> with ChangeNotifier {
       transition: transitionType,
       routeSettings: RouteSettings(arguments: arguments),
       clearStack: clearStack,
+    );
+  }
+
+  Future<dynamic> navigateReplacementNamed({
+    required BuildContext context,
+    required String nameRouter,
+    Object? arguments,
+    bool clearStack = false,
+    TransitionType? transitionType,
+  }) {
+    return router.navigateTo(
+      context,
+      nameRouter,
+      transition: transitionType,
+      routeSettings: RouteSettings(arguments: arguments),
+      clearStack: clearStack,
+      replace: true,
     );
   }
 

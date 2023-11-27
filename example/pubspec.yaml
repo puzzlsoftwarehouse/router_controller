@@ -37,9 +37,9 @@ dependencies:
   cupertino_icons: ^1.0.2
   universal_html: any
   router_controller:
-    git:
-      url: https://github.com/puzzlsoftwarehouse/router_controller.git
-      ref: develop
+    path: ../
+
+  provider: ^6.1.1
 
 dev_dependencies:
   integration_test:

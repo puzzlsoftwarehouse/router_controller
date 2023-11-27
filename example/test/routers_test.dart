@@ -1,8 +1,8 @@
-import 'package:example/router/router_controller.dart';
+import 'package:example/router/navigation_controller.dart';
 import 'package:example/router/router_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:router_controller/fluro.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:router_controller/router_controller.dart';
 
 class MockHomeScreen extends StatelessWidget {
   const MockHomeScreen({super.key});
@@ -14,10 +14,10 @@ class MockHomeScreen extends StatelessWidget {
 }
 
 void main() {
-  late RouterController routerController;
+  late NavigationController routerController;
 
   setUp(() {
-    routerController = RouterController();
+    routerController = NavigationController();
   });
 
   AppRouteMatch? getRouteMatch(String match) =>

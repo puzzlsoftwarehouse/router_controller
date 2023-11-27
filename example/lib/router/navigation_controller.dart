@@ -2,7 +2,7 @@ import 'package:example/main.dart';
 import 'package:example/not_found_widget.dart';
 import 'package:example/router/router_handler.dart';
 import 'package:flutter/material.dart';
-import 'package:router_controller/fluro.dart';
+import 'package:router_controller/router_controller.dart';
 
 enum RouterPage {
   first,
@@ -10,7 +10,7 @@ enum RouterPage {
   three,
 }
 
-class RouterController with ChangeNotifier {
+class NavigationController with ChangeNotifier {
   bool _disposed = false;
 
   TransitionType get transitionType => TransitionType.fadeIn;
@@ -47,8 +47,28 @@ class RouterController with ChangeNotifier {
     );
   }
 
+  Future<dynamic> navigateReplacementNamed({
+    required String nameRouter,
+    Object? arguments,
+    bool clearStack = false,
+    TransitionType? transitionType,
+  }) {
+    return router.navigateTo(
+      navigationApp.currentContext!,
+      nameRouter,
+      replace: true,
+      transition: transitionType ?? this.transitionType,
+      routeSettings: RouteSettings(arguments: arguments),
+      clearStack: clearStack,
+    );
+  }
+
   Future<dynamic> navigateWithWidget({required Widget widget}) =>
       Navigator.push(navigationApp.currentContext!,
+          MaterialPageRoute(builder: (_) => widget));
+
+  Future<dynamic> navigateReplacementWithWidget({required Widget widget}) =>
+      Navigator.pushReplacement(navigationApp.currentContext!,
           MaterialPageRoute(builder: (_) => widget));
 
   void popContext({Object? args}) => Navigator.pop(
@@ -95,6 +115,24 @@ class RouterController with ChangeNotifier {
         .firstWhere((String name) => name == "/${routerPage.name}");
 
     return navigateWithName(
+      nameRouter: nameRouterSelected,
+      clearStack: clearStack,
+      arguments: arguments,
+      transitionType: transitionType,
+    );
+  }
+
+  Future<dynamic> navigateReplacementRouter({
+    required RouterPage routerPage,
+    bool clearStack = false,
+    Object? arguments,
+  }) async {
+    await Future.microtask(() {});
+
+    String nameRouterSelected = _allRoutes.keys
+        .firstWhere((String name) => name == "/${routerPage.name}");
+
+    return navigateReplacementNamed(
       nameRouter: nameRouterSelected,
       clearStack: clearStack,
       arguments: arguments,

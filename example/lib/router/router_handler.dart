@@ -1,11 +1,10 @@
 import 'package:example/pages/first_page.dart';
 import 'package:example/pages/second_page.dart';
 import 'package:example/pages/three_page.dart';
+import 'package:example/router/navigation_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:router_controller/fluro.dart';
+import 'package:router_controller/router_controller.dart';
 import 'package:universal_html/html.dart' as html;
-
-import 'router_controller.dart';
 
 class RouterHandler {
   RouterHandler._();
@@ -50,7 +49,7 @@ class RouterHandler {
   }
 
   static bool existRouterForNavigation({
-    required RouterController routerController,
+    required NavigationController routerController,
     required String pageRouter,
   }) {
     if (pageRouter == getNameRouterUrl(RouterHandler.firstName, pageRouter)) {
