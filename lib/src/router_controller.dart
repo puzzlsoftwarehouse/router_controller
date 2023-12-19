@@ -58,7 +58,7 @@ class RouterController<T> with ChangeNotifier {
     required BuildContext context,
     Object? args,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 10));
+    await Future.delayed(const Duration(milliseconds: 1));
 
     String pathUrl = html.window.location.href;
 
