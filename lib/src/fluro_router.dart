@@ -2,14 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:router_controller/src/tree.dart';
 
 import '../router_controller.dart';
 
 class FluroRouter {
-  static final appRouter = FluroRouter();
-  final _routeTree = RouteTree();
-
+  final RouteTree _routeTree = RouteTree();
   Handler? notFoundHandler;
 
   static const defaultTransitionDuration = Duration(milliseconds: 250);

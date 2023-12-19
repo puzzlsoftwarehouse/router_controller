@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
-import 'package:router_controller/src/fluro_router.dart';
 import 'package:universal_html/html.dart' as html;
 
 class RouterController<T> with ChangeNotifier {
@@ -41,10 +40,36 @@ class RouterController<T> with ChangeNotifier {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => widget));
 
-  void popRouter({required BuildContext context, Object? args}) =>
+  // void popRouter({required BuildContext context, Object? args}) =>
+  //     router.pop(context, args);
+
+  // void popContext({required BuildContext context, Object? args}) =>
+  //     Navigator.pop(context, args);
+
+  void pop({
+    required BuildContext context,
+    Object? args,
+  }) async {
+    router.pop(context, args);
+    await _checkMorePopForRouter(context: context, args: args);
+  }
+
+  Future<void> _checkMorePopForRouter({
+    required BuildContext context,
+    Object? args,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 10));
+
+    String pathUrl = html.window.location.href;
+
+    Uri uri = Uri.parse(pathUrl);
+    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+
+    if (router.match(pathUrl) == null) {
       router.pop(context, args);
-  void popContext({required BuildContext context, Object? args}) =>
-      Navigator.pop(context, args);
+      await _checkMorePopForRouter(context: context, args: args);
+    }
+  }
 
   Future<dynamic> navigateWithName({
     required BuildContext context,
@@ -53,6 +78,9 @@ class RouterController<T> with ChangeNotifier {
     bool clearStack = false,
     TransitionType? transitionType,
   }) {
+    if (!nameRouter.startsWith('/')) {
+      nameRouter = '/$nameRouter';
+    }
     return router.navigateTo(
       context,
       nameRouter,
@@ -69,6 +97,9 @@ class RouterController<T> with ChangeNotifier {
     bool clearStack = false,
     TransitionType? transitionType,
   }) {
+    if (!nameRouter.startsWith('/')) {
+      nameRouter = '/$nameRouter';
+    }
     return router.navigateTo(
       context,
       nameRouter,
@@ -88,20 +119,36 @@ class RouterController<T> with ChangeNotifier {
     List<String> args =
         pathUrl.split("/").where((item) => item.isNotEmpty).toList();
 
-    String? pageRouterFiltered;
+    String? routerPageName;
+    String? router;
 
     for (String argumentUrl in args) {
       for (String routerName in allRoutes.keys) {
         if (argumentUrl == containsNameRouter(routerName, argumentUrl)) {
-          pageRouterFiltered = argumentUrl;
+          routerPageName = '/$argumentUrl';
+          router = routerName;
           break;
         }
       }
     }
 
+    Map<String, String> mappedArgs = {};
+
+    List<String>? routeParts = router?.split('/');
+    routeParts?.removeWhere((item) => item.isEmpty);
+
+    for (int i = 0; i < (routeParts?.length ?? 0); i++) {
+      if (routeParts![i].startsWith(':')) {
+        mappedArgs[routeParts[i].substring(1)] = args[i];
+      } else if (routeParts[i] != args[i]) {
+        break;
+      }
+    }
+
     return {
-      "pageRouter": pageRouterFiltered,
-      "arguments": args,
+      "pageRouter": routerPageName,
+      "arguments": mappedArgs,
+      "urlPage": pathUrl,
     };
   }
 
