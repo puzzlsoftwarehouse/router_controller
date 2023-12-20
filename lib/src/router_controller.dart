@@ -46,6 +46,14 @@ class RouterController<T> with ChangeNotifier {
   // void popContext({required BuildContext context, Object? args}) =>
   //     Navigator.pop(context, args);
 
+  void popUntil({
+    required BuildContext context,
+    required String nameRouter,
+    Object? args,
+  }) {
+    router.popUntil(context, nameRouter, args);
+  }
+
   void pop({
     required BuildContext context,
     Object? args,
@@ -144,7 +152,6 @@ class RouterController<T> with ChangeNotifier {
         break;
       }
     }
-
     return {
       "pageRouter": routerPageName,
       "arguments": mappedArgs,

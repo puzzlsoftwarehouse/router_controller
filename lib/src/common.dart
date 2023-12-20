@@ -17,12 +17,12 @@ class Handler {
 
 typedef RouteCreator<T> = Route<T> Function(
   RouteSettings route,
-  Map<String, List<String>> parameters,
+  Map<String, String> parameters,
 );
 
 typedef HandlerFunc = Widget? Function(
   BuildContext? context,
-  Map<String, List<String>> parameters,
+  Map<String, String> parameters,
 );
 
 class AppRoute {

@@ -10,7 +10,7 @@ class AppRouteMatch {
   AppRouteMatch(this.route);
 
   AppRoute route;
-  Map<String, List<String>> parameters = <String, List<String>>{};
+  Map<String, String> parameters = <String, String>{};
 }
 
 class RouteTreeNodeMatch {
@@ -18,10 +18,10 @@ class RouteTreeNodeMatch {
 
   RouteTreeNode node;
 
-  var parameters = <String, List<String>>{};
+  var parameters = <String, String>{};
 
   RouteTreeNodeMatch.fromMatch(RouteTreeNodeMatch? match, this.node) {
-    parameters = <String, List<String>>{};
+    parameters = <String, String>{};
     if (match != null) {
       parameters.addAll(match.parameters);
     }
@@ -131,11 +131,11 @@ class RouteTree {
           final match = RouteTreeNodeMatch.fromMatch(parentMatch, node);
           if (node.isParameter()) {
             final paramKey = node.part.substring(1);
-            match.parameters[paramKey] = [pathPart];
+            match.parameters[paramKey] = pathPart;
           }
-          if (queryMap != null) {
-            match.parameters.addAll(queryMap);
-          }
+          // if (queryMap != null) {
+          //   match.parameters.=queryMap;
+          // }
           currentMatches[node] = match;
           nextNodes.addAll(node.nodes);
         }

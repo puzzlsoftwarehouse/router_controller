@@ -35,6 +35,10 @@ class FluroRouter {
   void pop<T>(BuildContext context, [T? result]) =>
       Navigator.of(context).pop(result);
 
+  void popUntil(BuildContext context, String nameRouter, [Object? args]) {
+    Navigator.of(context).popUntil(ModalRoute.withName(nameRouter));
+  }
+
   Future navigateTo(
     BuildContext context,
     String path, {
@@ -97,7 +101,7 @@ class FluroRouter {
   }) {
     creator(
       RouteSettings? routeSettings,
-      Map<String, List<String>> parameters,
+      Map<String, String> parameters,
     ) {
       return MaterialPageRoute<void>(
         settings: routeSettings,
@@ -149,7 +153,7 @@ class FluroRouter {
       );
     }
 
-    final parameters = match?.parameters ?? <String, List<String>>{};
+    final parameters = match?.parameters ?? <String, String>{};
 
     if (handler.type == HandlerType.function) {
       handler.func(buildContext, parameters);
@@ -158,7 +162,7 @@ class FluroRouter {
 
     creator(
       RouteSettings? routeSettings,
-      Map<String, List<String>> parameters,
+      Map<String, String> parameters,
     ) {
       bool isNativeTransition = (transition == TransitionType.native ||
           transition == TransitionType.nativeModal);
