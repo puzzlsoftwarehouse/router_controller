@@ -27,6 +27,47 @@ class RouterController<T> with ChangeNotifier {
     });
   }
 
+  Future<dynamic> navigateRouter<R>({
+    required BuildContext context,
+    required R routerPage,
+    required Map<R, String> routerMap,
+    required List<Route<dynamic>> routeStack,
+    bool clearStack = false,
+    Object? arguments,
+    TransitionType? transitionType,
+  }) async {
+    //await Future.microtask(() {});
+
+    String nameRouterSelected = routerMap[routerPage]!;
+    Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
+
+    if (nameRouterSelected.contains(":")) {
+      List<String> keysToReplace = nameRouterSelected.split("/");
+      for (String keyReplace in keysToReplace) {
+        if (!keyReplace.contains(":")) continue;
+        if (nameRouterSelected.contains(keyReplace)) {
+          nameRouterSelected = nameRouterSelected.replaceAll(
+              keyReplace, args?[keyReplace.replaceAll(":", "")] ?? "");
+        }
+      }
+    }
+
+    if (args != null && args.containsKey("urlPage")) {
+      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
+          false)) {
+        nameRouterSelected = args['urlPage'];
+      }
+    }
+
+    return navigateWithName(
+      context: context,
+      nameRouter: nameRouterSelected,
+      clearStack: clearStack,
+      arguments: arguments,
+      transitionType: transitionType,
+    );
+  }
+
   Future<dynamic> navigateWithWidget({
     required BuildContext context,
     required Widget widget,

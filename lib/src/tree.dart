@@ -115,12 +115,10 @@ class RouteTree {
       final nextNodes = <RouteTreeNode>[];
 
       var pathPart = checkComponent;
-      Map<String, List<String>>? queryMap;
 
       if (checkComponent.contains("?")) {
         var splitParam = checkComponent.split("?");
         pathPart = splitParam[0];
-        queryMap = parseQueryString(splitParam[1]);
       }
 
       for (final node in nodesToCheck) {
@@ -133,9 +131,6 @@ class RouteTree {
             final paramKey = node.part.substring(1);
             match.parameters[paramKey] = pathPart;
           }
-          // if (queryMap != null) {
-          //   match.parameters.=queryMap;
-          // }
           currentMatches[node] = match;
           nextNodes.addAll(node.nodes);
         }
@@ -216,27 +211,5 @@ class RouteTree {
 
   bool _isParameterComponent(String component) {
     return component.startsWith(":");
-  }
-
-  Map<String, List<String>> parseQueryString(String query) {
-    final search = RegExp('([^&=]+)=?([^&]*)');
-    final params = <String, List<String>>{};
-
-    if (query.startsWith('?')) query = query.substring(1);
-
-    decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
-
-    for (Match match in search.allMatches(query)) {
-      final key = decode(match.group(1)!);
-      final value = decode(match.group(2)!);
-
-      if (params.containsKey(key)) {
-        params[key]!.add(value);
-      } else {
-        params[key] = [value];
-      }
-    }
-
-    return params;
   }
 }
