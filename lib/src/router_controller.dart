@@ -38,8 +38,6 @@ class RouterController<T> with ChangeNotifier {
     Object? arguments,
     TransitionType? transitionType,
   }) async {
-    //await Future.microtask(() {});
-
     String nameRouterSelected = routerMap[routerPage]!;
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
@@ -220,7 +218,9 @@ class RouterController<T> with ChangeNotifier {
     for (int i = 0; i < (routeParts?.length ?? 0); i++) {
       if (routeParts![i].startsWith(':')) {
         mappedArgs[routeParts[i].substring(1)] = args[i];
-      } else if (routeParts[i] != args[i]) {
+        continue;
+      }
+      if (routeParts[i] != args[i]) {
         break;
       }
     }

@@ -155,7 +155,7 @@ class FluroRouter {
       );
     }
 
-    final parameters = match?.parameters ?? <String, String>{};
+    Map<String, String> parameters = match?.parameters ?? <String, String>{};
 
     if (handler.type == HandlerType.function) {
       handler.func(buildContext, parameters);
@@ -178,7 +178,8 @@ class FluroRouter {
             return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
-      } else if (transition == TransitionType.material ||
+      }
+      if (transition == TransitionType.material ||
           transition == TransitionType.materialFullScreenDialog) {
         return MaterialPageRoute<dynamic>(
           settings: routeSettings,
@@ -189,7 +190,8 @@ class FluroRouter {
             return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
-      } else if (transition == TransitionType.cupertino ||
+      }
+      if (transition == TransitionType.cupertino ||
           transition == TransitionType.cupertinoFullScreenDialog) {
         return CupertinoPageRoute<dynamic>(
           settings: routeSettings,
@@ -200,39 +202,38 @@ class FluroRouter {
             return handler.func(context, parameters) ?? const SizedBox.shrink();
           },
         );
-      } else {
-        RouteTransitionsBuilder? routeTransitionsBuilder;
-
-        if (transition == TransitionType.custom) {
-          routeTransitionsBuilder =
-              transitionsBuilder ?? route?.transitionBuilder;
-        } else {
-          routeTransitionsBuilder = _standardTransitionsBuilder(transition);
-        }
-
-        return PageRouteBuilder<dynamic>(
-          opaque: opaque ?? route?.opaque ?? true,
-          settings: routeSettings,
-          maintainState: maintainState,
-          pageBuilder: (BuildContext context, Animation<double> animation,
-              Animation<double> secondaryAnimation) {
-            return handler.func(context, parameters) ?? const SizedBox.shrink();
-          },
-          transitionDuration: transition == TransitionType.none
-              ? Duration.zero
-              : (transitionDuration ??
-                  route?.transitionDuration ??
-                  defaultTransitionDuration),
-          reverseTransitionDuration: transition == TransitionType.none
-              ? Duration.zero
-              : (transitionDuration ??
-                  route?.transitionDuration ??
-                  defaultTransitionDuration),
-          transitionsBuilder: transition == TransitionType.none
-              ? (_, __, ___, child) => child
-              : routeTransitionsBuilder!,
-        );
       }
+      RouteTransitionsBuilder? routeTransitionsBuilder;
+
+      if (transition == TransitionType.custom) {
+        routeTransitionsBuilder =
+            transitionsBuilder ?? route?.transitionBuilder;
+      } else {
+        routeTransitionsBuilder = _standardTransitionsBuilder(transition);
+      }
+
+      return PageRouteBuilder<dynamic>(
+        opaque: opaque ?? route?.opaque ?? true,
+        settings: routeSettings,
+        maintainState: maintainState,
+        pageBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation) {
+          return handler.func(context, parameters) ?? const SizedBox.shrink();
+        },
+        transitionDuration: transition == TransitionType.none
+            ? Duration.zero
+            : (transitionDuration ??
+                route?.transitionDuration ??
+                defaultTransitionDuration),
+        reverseTransitionDuration: transition == TransitionType.none
+            ? Duration.zero
+            : (transitionDuration ??
+                route?.transitionDuration ??
+                defaultTransitionDuration),
+        transitionsBuilder: transition == TransitionType.none
+            ? (_, __, ___, child) => child
+            : routeTransitionsBuilder!,
+      );
     }
 
     return RouteMatch(
@@ -251,36 +252,35 @@ class FluroRouter {
     ) {
       if (transitionType == TransitionType.fadeIn) {
         return FadeTransition(opacity: animation, child: child);
-      } else {
-        const topLeft = Offset(0.0, 0.0);
-        const topRight = Offset(1.0, 0.0);
-        const bottomLeft = Offset(0.0, 1.0);
-
-        var startOffset = bottomLeft;
-        var endOffset = topLeft;
-
-        if (transitionType == TransitionType.inFromLeft) {
-          startOffset = const Offset(-1.0, 0.0);
-          endOffset = topLeft;
-        } else if (transitionType == TransitionType.inFromRight) {
-          startOffset = topRight;
-          endOffset = topLeft;
-        } else if (transitionType == TransitionType.inFromBottom) {
-          startOffset = bottomLeft;
-          endOffset = topLeft;
-        } else if (transitionType == TransitionType.inFromTop) {
-          startOffset = const Offset(0.0, -1.0);
-          endOffset = topLeft;
-        }
-
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: startOffset,
-            end: endOffset,
-          ).animate(animation),
-          child: child,
-        );
       }
+      const topLeft = Offset(0.0, 0.0);
+      const topRight = Offset(1.0, 0.0);
+      const bottomLeft = Offset(0.0, 1.0);
+
+      var startOffset = bottomLeft;
+      var endOffset = topLeft;
+
+      if (transitionType == TransitionType.inFromLeft) {
+        startOffset = const Offset(-1.0, 0.0);
+        endOffset = topLeft;
+      } else if (transitionType == TransitionType.inFromRight) {
+        startOffset = topRight;
+        endOffset = topLeft;
+      } else if (transitionType == TransitionType.inFromBottom) {
+        startOffset = bottomLeft;
+        endOffset = topLeft;
+      } else if (transitionType == TransitionType.inFromTop) {
+        startOffset = const Offset(0.0, -1.0);
+        endOffset = topLeft;
+      }
+
+      return SlideTransition(
+        position: Tween<Offset>(
+          begin: startOffset,
+          end: endOffset,
+        ).animate(animation),
+        child: child,
+      );
     };
   }
 

@@ -11,7 +11,7 @@ void main() {
     '/courses/:courseId/modules/:moduleId/newLesson',
   ];
 
-  test("should test routes", () {
+  test("should return correctly the currentRoute", () {
     String? route =
         RouteUtils.getCurrentRoute('/courses/1/modules/2/editLesson/3', routes);
     expect(route, '/courses/:courseId/modules/:moduleId/editLesson/:lessonId');
@@ -28,8 +28,11 @@ void main() {
 
     route = RouteUtils.getCurrentRoute('/login', routes);
     expect(route, '/login');
-
-    route =
+  });
+  test(
+      "should return the beforeRoute of currentRoute to navigate on web when don`t have page to pop",
+      () {
+    String? route =
         RouteUtils.findBeforeRoute('/courses/1/modules/2/editLesson/3', routes);
     expect(route, '/courses/1/modules');
 
