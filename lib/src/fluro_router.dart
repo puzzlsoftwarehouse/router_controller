@@ -36,7 +36,9 @@ class FluroRouter {
       Navigator.of(context).pop(result);
 
   void popUntil(BuildContext context, String nameRouter, [Object? args]) {
-    Navigator.of(context).popUntil(ModalRoute.withName(nameRouter));
+    Navigator.of(context).popUntil((route) {
+      return route.settings.name == nameRouter;
+    });
   }
 
   Future navigateTo(

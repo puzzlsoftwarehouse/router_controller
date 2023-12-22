@@ -83,15 +83,25 @@ class RouterController<T> with ChangeNotifier {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => widget));
 
-
-
   void popUntil({
     required BuildContext context,
     required String nameRouter,
     Object? args,
+    required List<String> routes,
   }) {
-    router.popUntil(context, nameRouter, args);
+    bool canPop = Navigator.of(context).canPop();
+    if (canPop) {
+      router.popUntil(context, nameRouter, args);
+      return;
+    }
+    router.navigateTo(
+      context,
+      nameRouter,
+      clearStack: true,
+      replace: true,
+    );
   }
+
   void pop({
     required BuildContext context,
     Object? args,
@@ -101,10 +111,11 @@ class RouterController<T> with ChangeNotifier {
     if (kIsWeb) {
       url = html.window.location.href;
     }
+    bool canPop = Navigator.of(context).canPop();
     router.pop(context, args);
 
     await _checkMorePopForRouter(context: context, args: args);
-    if (kIsWeb && !NavigatorState().canPop()) {
+    if (kIsWeb && !canPop) {
       _checkHasRoutesBefore(context, routes, url ?? '');
     }
   }
