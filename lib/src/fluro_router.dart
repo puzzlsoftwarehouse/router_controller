@@ -211,6 +211,11 @@ class FluroRouter {
       } else {
         routeTransitionsBuilder = _standardTransitionsBuilder(transition);
       }
+      Duration durationOfTransition = transition == TransitionType.none
+          ? Duration.zero
+          : (transitionDuration ??
+              route?.transitionDuration ??
+              defaultTransitionDuration);
 
       return PageRouteBuilder<dynamic>(
         opaque: opaque ?? route?.opaque ?? true,
@@ -220,16 +225,8 @@ class FluroRouter {
             Animation<double> secondaryAnimation) {
           return handler.func(context, parameters) ?? const SizedBox.shrink();
         },
-        transitionDuration: transition == TransitionType.none
-            ? Duration.zero
-            : (transitionDuration ??
-                route?.transitionDuration ??
-                defaultTransitionDuration),
-        reverseTransitionDuration: transition == TransitionType.none
-            ? Duration.zero
-            : (transitionDuration ??
-                route?.transitionDuration ??
-                defaultTransitionDuration),
+        transitionDuration: durationOfTransition,
+        reverseTransitionDuration: durationOfTransition,
         transitionsBuilder: transition == TransitionType.none
             ? (_, __, ___, child) => child
             : routeTransitionsBuilder!,
@@ -257,21 +254,11 @@ class FluroRouter {
       const topRight = Offset(1.0, 0.0);
       const bottomLeft = Offset(0.0, 1.0);
 
-      var startOffset = bottomLeft;
-      var endOffset = topLeft;
+      Offset startOffset = bottomLeft;
+      Offset endOffset = topLeft;
 
-      if (transitionType == TransitionType.inFromLeft) {
-        startOffset = const Offset(-1.0, 0.0);
-        endOffset = topLeft;
-      } else if (transitionType == TransitionType.inFromRight) {
-        startOffset = topRight;
-        endOffset = topLeft;
-      } else if (transitionType == TransitionType.inFromBottom) {
-        startOffset = bottomLeft;
-        endOffset = topLeft;
-      } else if (transitionType == TransitionType.inFromTop) {
-        startOffset = const Offset(0.0, -1.0);
-        endOffset = topLeft;
+      if (transitionType != null) {
+        startOffset = getStartOffSet(transitionType, topRight, bottomLeft);
       }
 
       return SlideTransition(
@@ -282,6 +269,23 @@ class FluroRouter {
         child: child,
       );
     };
+  }
+
+  Offset getStartOffSet(
+      TransitionType transitionType, Offset topRight, Offset bottomLeft) {
+    if (transitionType.isFromLeft) {
+      return const Offset(-1.0, 0.0);
+    }
+    if (transitionType.isFromRight) {
+      return topRight;
+    }
+    if (transitionType.isFromBottom) {
+      return bottomLeft;
+    }
+    if (transitionType.isFromTop) {
+      return const Offset(0.0, -1.0);
+    }
+    return bottomLeft;
   }
 
   /// Route generation method. This function can be used as a way to create routes on-the-fly

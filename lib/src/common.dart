@@ -56,7 +56,12 @@ enum TransitionType {
   materialFullScreenDialog,
   cupertino,
   cupertinoFullScreenDialog,
-  none,
+  none;
+
+  bool get isFromLeft => this == TransitionType.inFromLeft;
+  bool get isFromTop => this == TransitionType.inFromTop;
+  bool get isFromRight => this == TransitionType.inFromRight;
+  bool get isFromBottom => this == TransitionType.inFromBottom;
 }
 
 enum RouteMatchType {
