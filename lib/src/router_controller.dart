@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
+import 'package:router_controller/src/route_utils.dart';
 import 'package:universal_html/html.dart' as html;
 
 class RouterController<T> with ChangeNotifier {
@@ -81,11 +83,7 @@ class RouterController<T> with ChangeNotifier {
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (_) => widget));
 
-  // void popRouter({required BuildContext context, Object? args}) =>
-  //     router.pop(context, args);
 
-  // void popContext({required BuildContext context, Object? args}) =>
-  //     Navigator.pop(context, args);
 
   void popUntil({
     required BuildContext context,
@@ -94,13 +92,35 @@ class RouterController<T> with ChangeNotifier {
   }) {
     router.popUntil(context, nameRouter, args);
   }
-
   void pop({
     required BuildContext context,
     Object? args,
+    required List<String> routes,
   }) async {
+    String? url;
+    if (kIsWeb) {
+      url = html.window.location.href;
+    }
     router.pop(context, args);
+
     await _checkMorePopForRouter(context: context, args: args);
+    if (kIsWeb && !NavigatorState().canPop()) {
+      _checkHasRoutesBefore(context, routes, url ?? '');
+    }
+  }
+
+  void _checkHasRoutesBefore(
+      BuildContext context, List<String> routes, String url) {
+    String pathUrl = html.window.location.href;
+
+    Uri uri = Uri.parse(pathUrl);
+    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+
+    String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
+
+    if (beforeRoute != null) {
+      router.navigateTo(context, beforeRoute);
+    }
   }
 
   Future<void> _checkMorePopForRouter({
