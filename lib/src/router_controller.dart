@@ -35,6 +35,7 @@ class RouterController<T> with ChangeNotifier {
     required Map<R, String> routerMap,
     required List<Route<dynamic>> routeStack,
     bool clearStack = false,
+    bool replace = false,
     Object? arguments,
     TransitionType? transitionType,
   }) async {
@@ -59,27 +60,21 @@ class RouterController<T> with ChangeNotifier {
       }
     }
 
-    return navigateWithName(
+    return _navigateName(
       context: context,
       nameRouter: nameRouterSelected,
       clearStack: clearStack,
+      replace: replace,
       arguments: arguments,
       transitionType: transitionType,
     );
   }
 
-  Future<dynamic> navigateWithWidget({
+  Future<dynamic> navigateWidget({
     required BuildContext context,
     required Widget widget,
   }) =>
       Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
-
-  Future<dynamic> navigateReplacementWithWidget({
-    required BuildContext context,
-    required Widget widget,
-  }) =>
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (_) => widget));
 
   void popUntil({
     required BuildContext context,
@@ -88,10 +83,12 @@ class RouterController<T> with ChangeNotifier {
     required List<String> routes,
   }) {
     bool canPop = Navigator.of(context).canPop();
+
     if (canPop) {
       router.popUntil(context, nameRouter, args);
       return;
     }
+
     router.navigateTo(
       context,
       nameRouter,
@@ -102,8 +99,8 @@ class RouterController<T> with ChangeNotifier {
 
   void pop({
     required BuildContext context,
-    Object? args,
     required List<String> routes,
+    Object? args,
   }) async {
     String? url;
     if (kIsWeb) {
@@ -113,79 +110,15 @@ class RouterController<T> with ChangeNotifier {
     router.pop(context, args);
 
     await _checkMorePopForRouter(context: context, args: args);
+
     if (kIsWeb && !canPop) {
-      _checkHasRoutesBefore(context, routes, url ?? '');
+      _checkHasRoutesBefore(
+        context: context,
+        routes: routes,
+        url: url ?? '',
+        arguments: args,
+      );
     }
-  }
-
-  void _checkHasRoutesBefore(
-      BuildContext context, List<String> routes, String url) {
-    String pathUrl = html.window.location.href;
-
-    Uri uri = Uri.parse(pathUrl);
-    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
-
-    String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
-
-    if (beforeRoute != null) {
-      router.navigateTo(context, beforeRoute);
-    }
-  }
-
-  Future<void> _checkMorePopForRouter({
-    required BuildContext context,
-    Object? args,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 1));
-
-    String pathUrl = html.window.location.href;
-
-    Uri uri = Uri.parse(pathUrl);
-    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
-
-    if (router.match(pathUrl) == null) {
-      router.pop(context, args);
-      await _checkMorePopForRouter(context: context, args: args);
-    }
-  }
-
-  Future<dynamic> navigateWithName({
-    required BuildContext context,
-    required String nameRouter,
-    Object? arguments,
-    bool clearStack = false,
-    TransitionType? transitionType,
-  }) {
-    if (!nameRouter.startsWith('/')) {
-      nameRouter = '/$nameRouter';
-    }
-    return router.navigateTo(
-      context,
-      nameRouter,
-      transition: transitionType,
-      routeSettings: RouteSettings(arguments: arguments),
-      clearStack: clearStack,
-    );
-  }
-
-  Future<dynamic> navigateReplacementNamed({
-    required BuildContext context,
-    required String nameRouter,
-    Object? arguments,
-    bool clearStack = false,
-    TransitionType? transitionType,
-  }) {
-    if (!nameRouter.startsWith('/')) {
-      nameRouter = '/$nameRouter';
-    }
-    return router.navigateTo(
-      context,
-      nameRouter,
-      transition: transitionType,
-      routeSettings: RouteSettings(arguments: arguments),
-      clearStack: clearStack,
-      replace: true,
-    );
   }
 
   Map<String, dynamic> getArguments({required Map<String, Handler> allRoutes}) {
@@ -202,7 +135,7 @@ class RouterController<T> with ChangeNotifier {
 
     for (String argumentUrl in args) {
       for (String routerName in allRoutes.keys) {
-        if (argumentUrl == containsNameRouter(routerName, argumentUrl)) {
+        if (argumentUrl == _containsNameRouter(routerName, argumentUrl)) {
           routerPageName = '/$argumentUrl';
           router = routerName;
           break;
@@ -231,19 +164,73 @@ class RouterController<T> with ChangeNotifier {
     };
   }
 
-  String containsNameRouter(String routerUrl, String router) {
+  Future<dynamic> _navigateName({
+    required BuildContext context,
+    required String nameRouter,
+    Object? arguments,
+    bool clearStack = false,
+    bool replace = false,
+    TransitionType? transitionType,
+  }) {
+    if (!nameRouter.startsWith('/')) {
+      nameRouter = '/$nameRouter';
+    }
+
+    return router.navigateTo(
+      context,
+      nameRouter,
+      transition: transitionType,
+      routeSettings: RouteSettings(arguments: arguments),
+      clearStack: clearStack,
+      replace: replace,
+    );
+  }
+
+  String _containsNameRouter(String routerUrl, String router) {
     List<String> parts = routerUrl.split('/');
     String nameRouter = parts.contains(router) ? router : '';
 
     return nameRouter;
   }
 
-  dynamic getIndex(List<dynamic> list, int index) {
-    if (index >= 0 && index < list.length) {
-      return list[index];
-    }
+  void _checkHasRoutesBefore({
+    required BuildContext context,
+    required List<String> routes,
+    required String url,
+    Object? arguments,
+  }) {
+    String pathUrl = html.window.location.href;
 
-    return null;
+    Uri uri = Uri.parse(pathUrl);
+    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+
+    String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
+
+    if (beforeRoute != null) {
+      router.navigateTo(
+        context,
+        beforeRoute,
+        transition: TransitionType.fadeIn,
+        routeSettings: RouteSettings(arguments: arguments),
+      );
+    }
+  }
+
+  Future<void> _checkMorePopForRouter({
+    required BuildContext context,
+    Object? args,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 1));
+
+    String pathUrl = html.window.location.href;
+
+    Uri uri = Uri.parse(pathUrl);
+    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+
+    if (router.match(pathUrl) == null) {
+      router.pop(context, args);
+      await _checkMorePopForRouter(context: context, args: args);
+    }
   }
 
   @override
