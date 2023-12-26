@@ -10,7 +10,7 @@ class AppRouteMatch {
   AppRouteMatch(this.route);
 
   AppRoute route;
-  Map<String, List<String>> parameters = <String, List<String>>{};
+  Map<String, String> parameters = <String, String>{};
 }
 
 class RouteTreeNodeMatch {
@@ -18,10 +18,10 @@ class RouteTreeNodeMatch {
 
   RouteTreeNode node;
 
-  var parameters = <String, List<String>>{};
+  var parameters = <String, String>{};
 
   RouteTreeNodeMatch.fromMatch(RouteTreeNodeMatch? match, this.node) {
-    parameters = <String, List<String>>{};
+    parameters = <String, String>{};
     if (match != null) {
       parameters.addAll(match.parameters);
     }
@@ -115,12 +115,10 @@ class RouteTree {
       final nextNodes = <RouteTreeNode>[];
 
       var pathPart = checkComponent;
-      Map<String, List<String>>? queryMap;
 
       if (checkComponent.contains("?")) {
         var splitParam = checkComponent.split("?");
         pathPart = splitParam[0];
-        queryMap = parseQueryString(splitParam[1]);
       }
 
       for (final node in nodesToCheck) {
@@ -131,10 +129,7 @@ class RouteTree {
           final match = RouteTreeNodeMatch.fromMatch(parentMatch, node);
           if (node.isParameter()) {
             final paramKey = node.part.substring(1);
-            match.parameters[paramKey] = [pathPart];
-          }
-          if (queryMap != null) {
-            match.parameters.addAll(queryMap);
+            match.parameters[paramKey] = pathPart;
           }
           currentMatches[node] = match;
           nextNodes.addAll(node.nodes);
@@ -216,27 +211,5 @@ class RouteTree {
 
   bool _isParameterComponent(String component) {
     return component.startsWith(":");
-  }
-
-  Map<String, List<String>> parseQueryString(String query) {
-    final search = RegExp('([^&=]+)=?([^&]*)');
-    final params = <String, List<String>>{};
-
-    if (query.startsWith('?')) query = query.substring(1);
-
-    decode(String s) => Uri.decodeComponent(s.replaceAll('+', ' '));
-
-    for (Match match in search.allMatches(query)) {
-      final key = decode(match.group(1)!);
-      final value = decode(match.group(2)!);
-
-      if (params.containsKey(key)) {
-        params[key]!.add(value);
-      } else {
-        params[key] = [value];
-      }
-    }
-
-    return params;
   }
 }
