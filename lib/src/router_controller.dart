@@ -17,9 +17,6 @@ class RouterController<T> with ChangeNotifier {
     Widget? notFoundWidget,
     TransitionType? transitionType,
   }) {
-    router.notFoundHandler =
-        Handler(func: (_, __) => notFoundWidget ?? const SizedBox.shrink());
-
     allRoutes.forEach((String nameRouter, Handler handler) {
       router.define(
         nameRouter,
@@ -27,6 +24,9 @@ class RouterController<T> with ChangeNotifier {
         transitionType: transitionType,
       );
     });
+    if (notFoundWidget != null) {
+      router.notFoundHandler = Handler(func: (_, __) => notFoundWidget);
+    }
   }
 
   Future<dynamic> navigateRouter<R>({
