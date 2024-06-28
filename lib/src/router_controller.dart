@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
 import 'package:router_controller/src/route_utils.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:web/web.dart' as html;
 
 class RouterController<T> with ChangeNotifier {
   late T builder;
@@ -106,6 +106,7 @@ class RouterController<T> with ChangeNotifier {
     if (kIsWeb) {
       url = html.window.location.href;
     }
+
     bool canPop = Navigator.of(context).canPop();
     router.pop(context, args);
 

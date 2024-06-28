@@ -77,9 +77,13 @@ class FluroRouter {
       }
 
       if (route != null) {
-        final navigator = Navigator.of(context, rootNavigator: rootNavigator);
+        final NavigatorState navigator = Navigator.of(
+          context,
+          rootNavigator: rootNavigator,
+        );
         if (clearStack) {
-          future = navigator.pushAndRemoveUntil(route, (check) => false);
+          future = navigator.pushAndRemoveUntil(
+              route, (Route<dynamic> route) => route.isFirst);
         } else {
           future = replace
               ? navigator.pushReplacement(route)
