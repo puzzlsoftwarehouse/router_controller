@@ -1,4 +1,4 @@
-library router_controller;
+library;
 
 export 'src/common.dart';
 export 'src/extensions.dart';
