@@ -94,8 +94,15 @@ class RouteTree {
     }
   }
 
+  Map<String, String> getAllParameters(String url) {
+    Uri uri = Uri.parse(url);
+    return uri.queryParameters;
+  }
+
   AppRouteMatch? matchRoute(String path) {
+    print(path);
     var usePath = path;
+    var queryParams = <String, String>{};
 
     if (usePath.startsWith("/")) {
       usePath = path.substring(1);
@@ -106,6 +113,8 @@ class RouteTree {
     if (path == Navigator.defaultRouteName) {
       components = ["/"];
     }
+
+    queryParams = getAllParameters(path);
 
     var nodeMatches = <RouteTreeNode, RouteTreeNodeMatch>{};
     var nodesToCheck = _nodes;
@@ -154,6 +163,8 @@ class RouteTree {
       if (routes.isNotEmpty) {
         final routeMatch = AppRouteMatch(routes[0]);
         routeMatch.parameters = match.parameters;
+        routeMatch.parameters.addAll(queryParams);
+        print(routeMatch.parameters);
         return routeMatch;
       }
     }

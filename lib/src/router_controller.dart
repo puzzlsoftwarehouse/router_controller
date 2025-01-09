@@ -165,6 +165,22 @@ class RouterController<T> with ChangeNotifier {
     };
   }
 
+  void updateUrlParameters(Map<String, String> newParameters) {
+    final currentUrl = html.window.location.href;
+    final newUrl =
+        '${currentUrl.split('?')[0]}?${newParameters.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+    html.window.history.pushState(null, '', newUrl);
+  }
+
+  Map<String, String> getAllParameters() {
+    final currentUrl = html.window.location.href;
+    print("currentUrl: $currentUrl");
+    Map<String, String> parameters =
+        Uri.parse(Uri.parse(currentUrl).fragment).queryParameters;
+    print("parameterss: $parameters");
+    return Map.from(parameters);
+  }
+
   Future<dynamic> _navigateName({
     required BuildContext context,
     required String nameRouter,
