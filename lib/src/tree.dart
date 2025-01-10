@@ -100,7 +100,6 @@ class RouteTree {
   }
 
   AppRouteMatch? matchRoute(String path) {
-    print(path);
     var usePath = path;
     var queryParams = <String, String>{};
 
@@ -164,7 +163,6 @@ class RouteTree {
         final routeMatch = AppRouteMatch(routes[0]);
         routeMatch.parameters = match.parameters;
         routeMatch.parameters.addAll(queryParams);
-        print(routeMatch.parameters);
         return routeMatch;
       }
     }
