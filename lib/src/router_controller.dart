@@ -176,7 +176,6 @@ class RouterController<T> with ChangeNotifier {
     final currentUrl = html.window.location.href;
     Map<String, String> parameters =
         Uri.parse(Uri.parse(currentUrl).fragment).queryParameters;
-    print("parameterss: $parameters");
     return Map.from(parameters);
   }
 
