@@ -123,10 +123,8 @@ class RouterController<T> with ChangeNotifier {
   }
 
   Map<String, dynamic> getArguments({required Map<String, Handler> allRoutes}) {
-    String pathUrl = html.window.location.href;
-
-    Uri uri = Uri.parse(pathUrl);
-    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+    String? pathUrl = _getPathUrlOrigin();
+    if (pathUrl == null) return {};
 
     List<String> args =
         pathUrl.split("/").where((item) => item.isNotEmpty).toList();
@@ -214,20 +212,19 @@ class RouterController<T> with ChangeNotifier {
     required String url,
     Object? arguments,
   }) {
-    String pathUrl = html.window.location.href;
+    String? pathUrl = _getPathUrlOrigin();
 
-    Uri uri = Uri.parse(pathUrl);
-    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+    if (pathUrl != null) {
+      String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
 
-    String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
-
-    if (beforeRoute != null) {
-      router.navigateTo(
-        context,
-        beforeRoute,
-        transition: TransitionType.fadeIn,
-        routeSettings: RouteSettings(arguments: arguments),
-      );
+      if (beforeRoute != null) {
+        router.navigateTo(
+          context,
+          beforeRoute,
+          transition: TransitionType.fadeIn,
+          routeSettings: RouteSettings(arguments: arguments),
+        );
+      }
     }
   }
 
@@ -237,15 +234,27 @@ class RouterController<T> with ChangeNotifier {
   }) async {
     await Future.delayed(const Duration(milliseconds: 1));
 
-    String pathUrl = html.window.location.href;
+    String? pathUrl = _getPathUrlOrigin();
+
+    if (pathUrl != null) {
+      if (router.match(pathUrl) == null) {
+        router.pop(context, args);
+        await _checkMorePopForRouter(context: context, args: args);
+      }
+    }
+  }
+
+  String? _getPathUrlOrigin() {
+    String? pathUrl = html.window.location.href;
 
     Uri uri = Uri.parse(pathUrl);
-    pathUrl = pathUrl.replaceAll(uri.origin, "").replaceAll("#/", "");
+    pathUrl = pathUrl
+        .split("?")
+        .firstOrNull
+        ?.replaceAll(uri.origin, "")
+        .replaceAll("#/", "");
 
-    if (router.match(pathUrl) == null) {
-      router.pop(context, args);
-      await _checkMorePopForRouter(context: context, args: args);
-    }
+    return pathUrl;
   }
 
   @override
