@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
 import 'package:router_controller/src/route_utils.dart';
-import 'package:web/web.dart' as web;
+import 'non_web.dart' if (dart.library.html) 'package:web/web.dart' as web;
 
 class RouterController<T> with ChangeNotifier {
   late T builder;
@@ -166,14 +166,14 @@ class RouterController<T> with ChangeNotifier {
   void updateUrlParameters(Map<String, String> newParameters) {
     final currentUrl = web.window.location.href;
     final newUrl =
-        '${currentUrl.split('?')[0]}?${newParameters.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+        '${currentUrl?.split('?')[0]}?${newParameters.entries.map((e) => '${e.key}=${e.value}').join('&')}';
     web.window.history.replaceState(web.window.history.state, '', newUrl);
   }
 
   Map<String, String> getAllParameters() {
     final currentUrl = web.window.location.href;
     Map<String, String> parameters =
-        Uri.parse(Uri.parse(currentUrl).fragment).queryParameters;
+        Uri.parse(Uri.parse(currentUrl ?? "").fragment).queryParameters;
     return Map.from(parameters);
   }
 
@@ -246,6 +246,7 @@ class RouterController<T> with ChangeNotifier {
 
   String? _getPathUrlOrigin() {
     String? pathUrl = web.window.location.href;
+    if (pathUrl == null) return null;
 
     Uri uri = Uri.parse(pathUrl);
     pathUrl = pathUrl
