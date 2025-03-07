@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
 import 'package:router_controller/src/route_utils.dart';
-import 'non_web.dart' if (dart.library.html) 'package:web/web.dart' as web;
+import 'non_web.dart' if (dart.library.js_interop) 'package:web/web.dart'
+    as web;
 
 class RouterController<T> with ChangeNotifier {
   late T builder;
