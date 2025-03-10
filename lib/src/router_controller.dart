@@ -30,6 +30,36 @@ class RouterController<T> with ChangeNotifier {
     }
   }
 
+  String getPathWithRouter<R>({
+    required R routerPage,
+    required Map<R, String> routerMap,
+    required List<Route<dynamic>> routeStack,
+    Object? arguments,
+  }) {
+    String nameRouterSelected = routerMap[routerPage]!;
+    Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
+
+    if (nameRouterSelected.contains(":")) {
+      List<String> keysToReplace = nameRouterSelected.split("/");
+      for (String keyReplace in keysToReplace) {
+        if (!keyReplace.contains(":")) continue;
+        if (nameRouterSelected.contains(keyReplace)) {
+          nameRouterSelected = nameRouterSelected.replaceAll(
+              keyReplace, args?[keyReplace.replaceAll(":", "")] ?? "");
+        }
+      }
+    }
+
+    if (args != null && args.containsKey("urlPage")) {
+      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
+          false)) {
+        nameRouterSelected = args['urlPage'];
+      }
+    }
+
+    return nameRouterSelected;
+  }
+
   Future<dynamic> navigateRouter<R>({
     required BuildContext context,
     required R routerPage,
