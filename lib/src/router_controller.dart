@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
 import 'package:router_controller/src/route_utils.dart';
-import 'package:universal_html/html.dart' as html;
+import 'non_web.dart' if (dart.library.js_interop) 'package:web/web.dart'
+    as web;
 
 class RouterController<T> with ChangeNotifier {
   late T builder;
@@ -27,6 +28,36 @@ class RouterController<T> with ChangeNotifier {
     if (notFoundWidget != null) {
       router.notFoundHandler = Handler(func: (_, __) => notFoundWidget);
     }
+  }
+
+  String getPathWithRouter<R>({
+    required R routerPage,
+    required Map<R, String> routerMap,
+    required List<Route<dynamic>> routeStack,
+    Object? arguments,
+  }) {
+    String nameRouterSelected = routerMap[routerPage]!;
+    Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
+
+    if (nameRouterSelected.contains(":")) {
+      List<String> keysToReplace = nameRouterSelected.split("/");
+      for (String keyReplace in keysToReplace) {
+        if (!keyReplace.contains(":")) continue;
+        if (nameRouterSelected.contains(keyReplace)) {
+          nameRouterSelected = nameRouterSelected.replaceAll(
+              keyReplace, args?[keyReplace.replaceAll(":", "")] ?? "");
+        }
+      }
+    }
+
+    if (args != null && args.containsKey("urlPage")) {
+      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
+          false)) {
+        nameRouterSelected = args['urlPage'];
+      }
+    }
+
+    return nameRouterSelected;
   }
 
   Future<dynamic> navigateRouter<R>({
@@ -104,7 +135,7 @@ class RouterController<T> with ChangeNotifier {
   }) async {
     String? url;
     if (kIsWeb) {
-      url = html.window.location.href;
+      url = web.window.location.href;
     }
 
     bool canPop = Navigator.of(context).canPop();
@@ -164,16 +195,16 @@ class RouterController<T> with ChangeNotifier {
   }
 
   void updateUrlParameters(Map<String, String> newParameters) {
-    final currentUrl = html.window.location.href;
+    final currentUrl = web.window.location.href;
     final newUrl =
-        '${currentUrl.split('?')[0]}?${newParameters.entries.map((e) => '${e.key}=${e.value}').join('&')}';
-    html.window.history.replaceState(html.window.history.state, '', newUrl);
+        '${currentUrl?.split('?')[0]}?${newParameters.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+    web.window.history.replaceState(web.window.history.state, '', newUrl);
   }
 
   Map<String, String> getAllParameters() {
-    final currentUrl = html.window.location.href;
+    final currentUrl = web.window.location.href;
     Map<String, String> parameters =
-        Uri.parse(Uri.parse(currentUrl).fragment).queryParameters;
+        Uri.parse(Uri.parse(currentUrl ?? "").fragment).queryParameters;
     return Map.from(parameters);
   }
 
@@ -245,7 +276,8 @@ class RouterController<T> with ChangeNotifier {
   }
 
   String? _getPathUrlOrigin() {
-    String? pathUrl = html.window.location.href;
+    String? pathUrl = web.window.location.href;
+    if (pathUrl == null) return null;
 
     Uri uri = Uri.parse(pathUrl);
     pathUrl = pathUrl
