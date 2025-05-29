@@ -138,7 +138,13 @@ class FluroRouter {
       settingsToUse = settingsToUse.copyWithShim(name: path);
     }
 
-    AppRouteMatch? match = _routeTree.matchRoute(path!);
+    // Extract base path without query parameters for matching
+    String pathForMatching = path!;
+    if (path.contains('?')) {
+      pathForMatching = path.split('?').first;
+    }
+
+    AppRouteMatch? match = _routeTree.matchRoute(pathForMatching);
     AppRoute? route = match?.route;
 
     if (transitionDuration == null && route?.transitionDuration != null) {
@@ -160,6 +166,28 @@ class FluroRouter {
     }
 
     Map<String, String> parameters = match?.parameters ?? <String, String>{};
+
+    // Extract query parameters if they exist in the path
+    if (path.contains('?')) {
+      String queryString = path.split('?').last;
+      Map<String, String> queryParams = Uri.splitQueryString(queryString);
+
+      // Add query parameters from URL
+      if (queryParams.isNotEmpty) {
+        parameters.addAll(queryParams);
+      }
+    }
+
+    // Add query parameters from arguments if available
+    if (settingsToUse.arguments is Map) {
+      Map<dynamic, dynamic> args = settingsToUse.arguments as Map;
+      if (args.containsKey('queryParameters') &&
+          args['queryParameters'] is Map<String, String>) {
+        Map<String, String> queryParams =
+            args['queryParameters'] as Map<String, String>;
+        parameters.addAll(queryParams);
+      }
+    }
 
     if (handler.type == HandlerType.function) {
       handler.func(buildContext, parameters);

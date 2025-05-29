@@ -69,6 +69,7 @@ class RouterController<T> with ChangeNotifier {
     bool replace = false,
     Object? arguments,
     TransitionType? transitionType,
+    Map<String, String>? parameters,
   }) async {
     String nameRouterSelected = routerMap[routerPage]!;
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
@@ -98,6 +99,7 @@ class RouterController<T> with ChangeNotifier {
       replace: replace,
       arguments: arguments,
       transitionType: transitionType,
+      parameters: parameters,
     );
   }
 
@@ -132,6 +134,7 @@ class RouterController<T> with ChangeNotifier {
     required BuildContext context,
     required List<String> routes,
     Object? args,
+    Map<String, String>? parameters,
   }) async {
     String? url;
     if (kIsWeb) {
@@ -149,6 +152,7 @@ class RouterController<T> with ChangeNotifier {
         routes: routes,
         url: url ?? '',
         arguments: args,
+        parameters: parameters,
       );
     }
   }
@@ -157,8 +161,18 @@ class RouterController<T> with ChangeNotifier {
     String? pathUrl = _getPathUrlOrigin();
     if (pathUrl == null) return {};
 
+    // Split URL into path and query string
+    String path = pathUrl.split("?").first;
+    Map<String, String> queryParams = {};
+
+    // Extract query parameters if present
+    if (pathUrl.contains("?")) {
+      String queryString = pathUrl.split("?").last;
+      queryParams = Uri.splitQueryString(queryString);
+    }
+
     List<String> args =
-        pathUrl.split("/").where((item) => item.isNotEmpty).toList();
+        path.split("/").where((item) => item.isNotEmpty).toList();
 
     String? routerPageName;
     String? router;
@@ -179,6 +193,7 @@ class RouterController<T> with ChangeNotifier {
     routeParts?.removeWhere((item) => item.isEmpty);
 
     for (int i = 0; i < (routeParts?.length ?? 0); i++) {
+      if (i >= args.length) break;
       if (routeParts![i].startsWith(':')) {
         mappedArgs[routeParts[i].substring(1)] = args[i];
         continue;
@@ -187,10 +202,12 @@ class RouterController<T> with ChangeNotifier {
         break;
       }
     }
+
     return {
       "pageRouter": routerPageName,
       "arguments": mappedArgs,
-      "urlPage": pathUrl,
+      "urlPage": path,
+      "queryParameters": queryParams,
     };
   }
 
@@ -215,9 +232,21 @@ class RouterController<T> with ChangeNotifier {
     bool clearStack = false,
     bool replace = false,
     TransitionType? transitionType,
+    Map<String, String>? parameters,
   }) {
     if (!nameRouter.startsWith('/')) {
       nameRouter = '/$nameRouter';
+    }
+
+    // Add query parameters to the URL if provided
+    if (parameters != null && parameters.isNotEmpty) {
+      String queryString = parameters.entries
+          .map((e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+          .join('&');
+      if (queryString.isNotEmpty) {
+        nameRouter = '$nameRouter?$queryString';
+      }
     }
 
     return router.navigateTo(
@@ -242,6 +271,7 @@ class RouterController<T> with ChangeNotifier {
     required List<String> routes,
     required String url,
     Object? arguments,
+    Map<String, String>? parameters,
   }) {
     String? pathUrl = _getPathUrlOrigin();
 
@@ -249,9 +279,22 @@ class RouterController<T> with ChangeNotifier {
       String? beforeRoute = RouteUtils.findBeforeRoute(pathUrl, routes);
 
       if (beforeRoute != null) {
+        String routeWithParams = beforeRoute;
+
+        // Add query parameters to the URL if provided
+        if (parameters != null && parameters.isNotEmpty) {
+          String queryString = parameters.entries
+              .map((e) =>
+                  '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+              .join('&');
+          if (queryString.isNotEmpty) {
+            routeWithParams = '$beforeRoute?$queryString';
+          }
+        }
+
         router.navigateTo(
           context,
-          beforeRoute,
+          routeWithParams,
           transition: TransitionType.fadeIn,
           routeSettings: RouteSettings(arguments: arguments),
         );
