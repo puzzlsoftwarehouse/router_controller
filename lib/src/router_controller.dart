@@ -40,14 +40,13 @@ class RouterController<T> with ChangeNotifier {
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
     if (nameRouterSelected.contains(":")) {
-      List<String> keysToReplace = nameRouterSelected.split("/");
-      for (String keyReplace in keysToReplace) {
-        if (!keyReplace.contains(":")) continue;
-        if (nameRouterSelected.contains(keyReplace)) {
-          nameRouterSelected = nameRouterSelected.replaceAll(
-              keyReplace, args?[keyReplace.replaceAll(":", "")] ?? "");
-        }
-      }
+      nameRouterSelected = nameRouterSelected.replaceAllMapped(
+        RegExp(r":([a-zA-Z_]+)(?=/|$)"),
+        (Match match) {
+          String parameterName = match.group(1)!;
+          return args?[parameterName] ?? '';
+        },
+      );
     }
 
     if (args != null && args.containsKey("urlPage")) {
@@ -74,14 +73,13 @@ class RouterController<T> with ChangeNotifier {
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
     if (nameRouterSelected.contains(":")) {
-      List<String> keysToReplace = nameRouterSelected.split("/");
-      for (String keyReplace in keysToReplace) {
-        if (!keyReplace.contains(":")) continue;
-        if (nameRouterSelected.contains(keyReplace)) {
-          nameRouterSelected = nameRouterSelected.replaceAll(
-              keyReplace, args?[keyReplace.replaceAll(":", "")] ?? "");
-        }
-      }
+      nameRouterSelected = nameRouterSelected.replaceAllMapped(
+        RegExp(r":([a-zA-Z_]+)(?=/|$)"),
+        (Match match) {
+          String parameterName = match.group(1)!;
+          return args?[parameterName] ?? "";
+        },
+      );
     }
 
     if (args != null && args.containsKey("urlPage")) {
