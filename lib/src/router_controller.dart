@@ -176,7 +176,7 @@ class RouterController<T> with ChangeNotifier {
     List<String>? routeParts = router?.split('/');
     routeParts?.removeWhere((item) => item.isEmpty);
 
-    for (int i = 0; i < (routeParts?.length ?? 0); i++) {
+    for (int i = 0; i < (routeParts?.length ?? 0) && i < args.length; i++) {
       if (routeParts![i].startsWith(':')) {
         mappedArgs[routeParts[i].substring(1)] = args[i];
         continue;
