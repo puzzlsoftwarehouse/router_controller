@@ -155,7 +155,7 @@ class RouteTree {
     final matches = nodeMatches.values.toList();
 
     if (matches.isNotEmpty) {
-      final match = matches.first;
+      final match = matches.last;
       final nodeToUse = match.node;
       final routes = nodeToUse.routes;
 
@@ -166,7 +166,6 @@ class RouteTree {
         return routeMatch;
       }
     }
-
     return null;
   }
 
