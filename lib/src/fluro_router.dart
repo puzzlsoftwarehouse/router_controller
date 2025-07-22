@@ -20,11 +20,14 @@ class FluroRouter {
     bool? opaque,
   }) {
     _routeTree.addRoute(
-      AppRoute(routePath, handler,
-          transitionType: transitionType,
-          transitionDuration: transitionDuration,
-          transitionBuilder: transitionBuilder,
-          opaque: opaque),
+      AppRoute(
+        routePath,
+        handler,
+        transitionType: transitionType,
+        transitionDuration: transitionDuration,
+        transitionBuilder: transitionBuilder,
+        opaque: opaque,
+      ),
     );
   }
 
