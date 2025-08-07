@@ -1,9 +1,9 @@
 name: router_controller
 description: A new Flutter project.
-version: 1.2.3
+version: 1.2.5
 
 environment:
-  sdk: '>=3.5.2 <4.0.0'
+  sdk: '>=3.7.0 <4.0.0'
   flutter: ">=1.17.0"
 
 dependencies:
@@ -14,5 +14,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
