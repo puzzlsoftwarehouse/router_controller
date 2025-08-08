@@ -2,7 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:router_controller/router_controller.dart';
 import 'package:router_controller/src/route_utils.dart';
-import 'non_web.dart' if (dart.library.js_interop) 'package:web/web.dart'
+import 'non_web.dart'
+    if (dart.library.js_interop) 'package:web/web.dart'
     as web;
 
 class RouterController<T> with ChangeNotifier {
@@ -26,7 +27,7 @@ class RouterController<T> with ChangeNotifier {
       );
     });
     if (notFoundWidget != null) {
-      router.notFoundHandler = Handler(func: (_, __) => notFoundWidget);
+      router.notFoundHandler = Handler(func: (_, _) => notFoundWidget);
     }
   }
 
@@ -102,8 +103,7 @@ class RouterController<T> with ChangeNotifier {
   Future<dynamic> navigateWidget({
     required BuildContext context,
     required Widget widget,
-  }) =>
-      Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
+  }) => Navigator.push(context, MaterialPageRoute(builder: (_) => widget));
 
   void popUntil({
     required BuildContext context,
@@ -118,12 +118,7 @@ class RouterController<T> with ChangeNotifier {
       return;
     }
 
-    router.navigateTo(
-      context,
-      nameRouter,
-      clearStack: true,
-      replace: true,
-    );
+    router.navigateTo(context, nameRouter, clearStack: true, replace: true);
   }
 
   void pop({
@@ -155,8 +150,10 @@ class RouterController<T> with ChangeNotifier {
     String? pathUrl = _getPathUrlOrigin();
     if (pathUrl == null) return {};
 
-    List<String> args =
-        pathUrl.split("/").where((item) => item.isNotEmpty).toList();
+    List<String> args = pathUrl
+        .split("/")
+        .where((item) => item.isNotEmpty)
+        .toList();
 
     String? routerPageName;
     String? router;
@@ -201,8 +198,9 @@ class RouterController<T> with ChangeNotifier {
 
   Map<String, String> getAllParameters() {
     final currentUrl = web.window.location.href;
-    Map<String, String> parameters =
-        Uri.parse(Uri.parse(currentUrl ?? "").fragment).queryParameters;
+    Map<String, String> parameters = Uri.parse(
+      Uri.parse(currentUrl ?? "").fragment,
+    ).queryParameters;
     return Map.from(parameters);
   }
 

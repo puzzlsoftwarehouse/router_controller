@@ -86,7 +86,9 @@ class FluroRouter {
         );
         if (clearStack) {
           future = navigator.pushAndRemoveUntil(
-              route, (Route<dynamic> route) => route.isFirst);
+            route,
+            (Route<dynamic> route) => route.isFirst,
+          );
         } else {
           future = replace
               ? navigator.pushReplacement(route)
@@ -108,10 +110,7 @@ class FluroRouter {
     String path, {
     bool? maintainState,
   }) {
-    creator(
-      RouteSettings? routeSettings,
-      Map<String, String> parameters,
-    ) {
+    creator(RouteSettings? routeSettings, Map<String, String> parameters) {
       return MaterialPageRoute<void>(
         settings: routeSettings,
         maintainState: maintainState ?? true,
@@ -169,11 +168,9 @@ class FluroRouter {
       return RouteMatch(matchType: RouteMatchType.nonVisual);
     }
 
-    creator(
-      RouteSettings? routeSettings,
-      Map<String, String> parameters,
-    ) {
-      bool isNativeTransition = (transition == TransitionType.native ||
+    creator(RouteSettings? routeSettings, Map<String, String> parameters) {
+      bool isNativeTransition =
+          (transition == TransitionType.native ||
           transition == TransitionType.nativeModal);
 
       if (isNativeTransition) {
@@ -221,21 +218,26 @@ class FluroRouter {
       Duration durationOfTransition = transition == TransitionType.none
           ? Duration.zero
           : (transitionDuration ??
-              route?.transitionDuration ??
-              defaultTransitionDuration);
+                route?.transitionDuration ??
+                defaultTransitionDuration);
 
       return PageRouteBuilder<dynamic>(
         opaque: opaque ?? route?.opaque ?? true,
         settings: routeSettings,
         maintainState: maintainState,
-        pageBuilder: (BuildContext context, Animation<double> animation,
-            Animation<double> secondaryAnimation) {
-          return handler.func(context, parameters) ?? const SizedBox.shrink();
-        },
+        pageBuilder:
+            (
+              BuildContext context,
+              Animation<double> animation,
+              Animation<double> secondaryAnimation,
+            ) {
+              return handler.func(context, parameters) ??
+                  const SizedBox.shrink();
+            },
         transitionDuration: durationOfTransition,
         reverseTransitionDuration: durationOfTransition,
         transitionsBuilder: transition == TransitionType.none
-            ? (_, __, ___, child) => child
+            ? (_, _, _, child) => child
             : routeTransitionsBuilder!,
       );
     }
@@ -247,7 +249,8 @@ class FluroRouter {
   }
 
   RouteTransitionsBuilder _standardTransitionsBuilder(
-      TransitionType? transitionType) {
+    TransitionType? transitionType,
+  ) {
     return (
       BuildContext context,
       Animation<double> animation,
@@ -279,7 +282,10 @@ class FluroRouter {
   }
 
   Offset getStartOffSet(
-      TransitionType transitionType, Offset topRight, Offset bottomLeft) {
+    TransitionType transitionType,
+    Offset topRight,
+    Offset bottomLeft,
+  ) {
     if (transitionType.isFromLeft) {
       return const Offset(-1.0, 0.0);
     }
