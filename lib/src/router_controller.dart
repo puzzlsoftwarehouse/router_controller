@@ -26,6 +26,7 @@ class RouterController<T> with ChangeNotifier {
         transitionType: transitionType,
       );
     });
+
     if (notFoundWidget != null) {
       router.notFoundHandler = Handler(func: (_, _) => notFoundWidget);
     }
@@ -38,28 +39,36 @@ class RouterController<T> with ChangeNotifier {
     Object? arguments,
   }) {
     String nameRouterSelected = routerMap[routerPage]!;
-    Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
-
-    if (args != null && args.containsKey("urlPage")) {
-      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
-          false)) {
-        return args["urlPage"];
-      }
-    }
+    Map<String, dynamic> args = arguments as Map<String, dynamic>? ?? {};
+    args.removeWhere((key, value) => value == null);
 
     if (nameRouterSelected.contains(":")) {
       nameRouterSelected = nameRouterSelected.replaceAllMapped(
         RegExp(r":([a-zA-Z_]+)(?=/|$)"),
         (Match match) {
           String parameterName = match.group(1)!;
-          if (args != null && args.containsKey(parameterName)) {
-            return args[parameterName].toString();
+          Map<String, dynamic> newArgs = args;
+
+          if (!newArgs.containsKey(parameterName)) {
+            if (args.containsKey("arguments")) {
+              newArgs = args['arguments'];
+              newArgs.removeWhere((key, value) => value == null);
+            }
           }
-          throw Exception(
-            "Faltando parâmetro '$parameterName' nos argumentos!",
-          );
+
+          return newArgs.containsKey(parameterName)
+              ? newArgs[parameterName]
+              : "";
         },
       );
+    }
+
+    if (args.containsKey('urlPage')) {
+      final String? lastRouteName = routeStack.last.settings.name;
+      final String urlPage = args['urlPage'];
+      if (lastRouteName == null || !lastRouteName.endsWith(urlPage)) {
+        nameRouterSelected = urlPage;
+      }
     }
 
     return nameRouterSelected;

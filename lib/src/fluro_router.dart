@@ -90,9 +90,10 @@ class FluroRouter {
             (Route<dynamic> route) => route.isFirst,
           );
         } else {
-          future = replace
-              ? navigator.pushReplacement(route)
-              : navigator.push(route);
+          future =
+              replace
+                  ? navigator.pushReplacement(route)
+                  : navigator.push(route);
         }
         completer.complete();
       } else {
@@ -171,7 +172,7 @@ class FluroRouter {
     creator(RouteSettings? routeSettings, Map<String, String> parameters) {
       bool isNativeTransition =
           (transition == TransitionType.native ||
-          transition == TransitionType.nativeModal);
+              transition == TransitionType.nativeModal);
 
       if (isNativeTransition) {
         return MaterialPageRoute<dynamic>(
@@ -215,30 +216,30 @@ class FluroRouter {
       } else {
         routeTransitionsBuilder = _standardTransitionsBuilder(transition);
       }
-      Duration durationOfTransition = transition == TransitionType.none
-          ? Duration.zero
-          : (transitionDuration ??
-                route?.transitionDuration ??
-                defaultTransitionDuration);
+      Duration durationOfTransition =
+          transition == TransitionType.none
+              ? Duration.zero
+              : (transitionDuration ??
+                  route?.transitionDuration ??
+                  defaultTransitionDuration);
 
       return PageRouteBuilder<dynamic>(
         opaque: opaque ?? route?.opaque ?? true,
         settings: routeSettings,
         maintainState: maintainState,
-        pageBuilder:
-            (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-            ) {
-              return handler.func(context, parameters) ??
-                  const SizedBox.shrink();
-            },
+        pageBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+        ) {
+          return handler.func(context, parameters) ?? const SizedBox.shrink();
+        },
         transitionDuration: durationOfTransition,
         reverseTransitionDuration: durationOfTransition,
-        transitionsBuilder: transition == TransitionType.none
-            ? (_, _, _, child) => child
-            : routeTransitionsBuilder!,
+        transitionsBuilder:
+            transition == TransitionType.none
+                ? (_, _, _, child) => child
+                : routeTransitionsBuilder!,
       );
     }
 
