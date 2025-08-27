@@ -40,21 +40,23 @@ class RouterController<T> with ChangeNotifier {
     String nameRouterSelected = routerMap[routerPage]!;
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
+    if (args != null && args.containsKey("urlPage")) {
+      return args["urlPage"];
+    }
+
     if (nameRouterSelected.contains(":")) {
       nameRouterSelected = nameRouterSelected.replaceAllMapped(
         RegExp(r":([a-zA-Z_]+)(?=/|$)"),
         (Match match) {
           String parameterName = match.group(1)!;
-          return args?[parameterName] ?? '';
+          if (args != null && args.containsKey(parameterName)) {
+            return args[parameterName].toString();
+          }
+          throw Exception(
+            "Faltando parâmetro '$parameterName' nos argumentos!",
+          );
         },
       );
-    }
-
-    if (args != null && args.containsKey("urlPage")) {
-      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
-          false)) {
-        nameRouterSelected = args['urlPage'];
-      }
     }
 
     return nameRouterSelected;
@@ -71,24 +73,13 @@ class RouterController<T> with ChangeNotifier {
     TransitionType? transitionType,
   }) async {
     String nameRouterSelected = routerMap[routerPage]!;
-    Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
-    if (nameRouterSelected.contains(":")) {
-      nameRouterSelected = nameRouterSelected.replaceAllMapped(
-        RegExp(r":([a-zA-Z_]+)(?=/|$)"),
-        (Match match) {
-          String parameterName = match.group(1)!;
-          return args?[parameterName] ?? "";
-        },
-      );
-    }
-
-    if (args != null && args.containsKey("urlPage")) {
-      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
-          false)) {
-        nameRouterSelected = args['urlPage'];
-      }
-    }
+    nameRouterSelected = getPathWithRouter(
+      routerPage: routerPage,
+      routerMap: routerMap,
+      routeStack: routeStack,
+      arguments: arguments,
+    );
 
     return _navigateName(
       context: context,
@@ -150,10 +141,8 @@ class RouterController<T> with ChangeNotifier {
     String? pathUrl = _getPathUrlOrigin();
     if (pathUrl == null) return {};
 
-    List<String> args = pathUrl
-        .split("/")
-        .where((item) => item.isNotEmpty)
-        .toList();
+    List<String> args =
+        pathUrl.split("/").where((item) => item.isNotEmpty).toList();
 
     String? routerPageName;
     String? router;
@@ -198,9 +187,8 @@ class RouterController<T> with ChangeNotifier {
 
   Map<String, String> getAllParameters() {
     final currentUrl = web.window.location.href;
-    Map<String, String> parameters = Uri.parse(
-      Uri.parse(currentUrl ?? "").fragment,
-    ).queryParameters;
+    Map<String, String> parameters =
+        Uri.parse(Uri.parse(currentUrl ?? "").fragment).queryParameters;
     return Map.from(parameters);
   }
 
