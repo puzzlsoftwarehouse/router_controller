@@ -41,7 +41,10 @@ class RouterController<T> with ChangeNotifier {
     Map<String, dynamic>? args = arguments as Map<String, dynamic>?;
 
     if (args != null && args.containsKey("urlPage")) {
-      return args["urlPage"];
+      if (!(routeStack.last.settings.name?.endsWith(args['urlPage']) ??
+          false)) {
+        return args["urlPage"];
+      }
     }
 
     if (nameRouterSelected.contains(":")) {
