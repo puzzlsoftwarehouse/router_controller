@@ -188,7 +188,7 @@ class RouterController<T> with ChangeNotifier {
     }
 
     final Map<String, String> extractedArgs = extractRouteArguments(
-      routePattern: router!,
+      routePattern: router,
       pathUrl: pathUrl,
     );
 
@@ -301,9 +301,11 @@ class RouterController<T> with ChangeNotifier {
   }
 
   Map<String, String> extractRouteArguments({
-    required String routePattern,
+    required String? routePattern,
     required String pathUrl,
   }) {
+    if (routePattern == null) return {};
+
     final routeSegments =
         routePattern.split('/').where((e) => e.isNotEmpty).toList();
 
