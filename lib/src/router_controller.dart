@@ -149,8 +149,11 @@ class RouterController<T> with ChangeNotifier {
     }
   }
 
-  Map<String, dynamic> getArguments({required Map<String, Handler> allRoutes}) {
-    String? pathUrl = _getPathUrlOrigin();
+  Map<String, dynamic> getArguments({
+    required Map<String, Handler> allRoutes,
+    String? path,
+  }) {
+    String? pathUrl = path ?? _getPathUrlOrigin();
     if (pathUrl == null) return {};
 
     List<String> args =
@@ -183,6 +186,13 @@ class RouterController<T> with ChangeNotifier {
         break;
       }
     }
+
+    print({
+      "pageRouter": routerPageName,
+      "arguments": mappedArgs,
+      "urlPage": pathUrl,
+    });
+
     return {
       "pageRouter": routerPageName,
       "arguments": mappedArgs,
