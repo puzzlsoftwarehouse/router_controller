@@ -153,7 +153,7 @@ class RouterController<T> with ChangeNotifier {
     required Map<String, Handler> allRoutes,
     String? path,
   }) {
-    String? pathUrl = path ?? _getPathUrlOrigin();
+    String? pathUrl = _getPathUrlOrigin(path: path);
     if (pathUrl == null) return {};
 
     List<String> args =
@@ -187,15 +187,20 @@ class RouterController<T> with ChangeNotifier {
       }
     }
 
-    print({
-      "pageRouter": routerPageName,
-      "arguments": mappedArgs,
-      "urlPage": pathUrl,
+    final Map<String, String> extractedArgs = extractRouteArguments(
+      routePattern: router!,
+      pathUrl: pathUrl,
+    );
+
+    final Map<String, String> mergedArgs = Map<String, String>.from(mappedArgs);
+
+    extractedArgs.forEach((key, value) {
+      mergedArgs.putIfAbsent(key, () => value);
     });
 
     return {
       "pageRouter": routerPageName,
-      "arguments": mappedArgs,
+      "arguments": mergedArgs,
       "urlPage": pathUrl,
     };
   }
@@ -281,8 +286,8 @@ class RouterController<T> with ChangeNotifier {
     }
   }
 
-  String? _getPathUrlOrigin() {
-    String? pathUrl = web.window.location.href;
+  String? _getPathUrlOrigin({String? path}) {
+    String? pathUrl = path ?? web.window.location.href;
     if (pathUrl == null) return null;
 
     Uri uri = Uri.parse(pathUrl);
@@ -293,6 +298,29 @@ class RouterController<T> with ChangeNotifier {
         .replaceAll("#/", "");
 
     return pathUrl;
+  }
+
+  Map<String, String> extractRouteArguments({
+    required String routePattern,
+    required String pathUrl,
+  }) {
+    final routeSegments =
+        routePattern.split('/').where((e) => e.isNotEmpty).toList();
+
+    final pathSegments = pathUrl.split('/').where((e) => e.isNotEmpty).toList();
+
+    final Map<String, String> args = {};
+
+    for (int i = 0; i < routeSegments.length && i < pathSegments.length; i++) {
+      final routeSegment = routeSegments[i];
+
+      if (routeSegment.startsWith(':')) {
+        final key = routeSegment.substring(1);
+        args[key] = pathSegments[i];
+      }
+    }
+
+    return args;
   }
 
   @override

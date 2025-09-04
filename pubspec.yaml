@@ -1,6 +1,6 @@
 name: router_controller
 description: A new Flutter project.
-version: 1.2.8
+version: 1.2.9
 
 environment:
   sdk: '>=3.7.0 <4.0.0'
